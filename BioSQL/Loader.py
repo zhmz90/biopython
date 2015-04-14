@@ -32,7 +32,8 @@ from Bio._py3k import basestring
 
 __docformat__ = "restructuredtext en"
 
-class DatabaseLoader:
+
+class DatabaseLoader(object):
     """Object used to load SeqRecord objects into a BioSQL database."""
 
     def __init__(self, adaptor, dbid, fetch_NCBI_taxonomy=False):
@@ -1051,7 +1052,7 @@ class DatabaseLoader:
         return (bioentry_id, dbxref_id)
 
 
-class DatabaseRemover:
+class DatabaseRemover(object):
     """Complement the Loader functionality by fully removing a database.
 
     This probably isn't really useful for normal purposes, since you

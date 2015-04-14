@@ -43,6 +43,8 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 from .Interfaces import AlignmentIterator, SequentialAlignmentWriter
 
+__docformat__ = "restructuredtext en"
+
 _PHYLIP_ID_WIDTH = 10
 
 
@@ -163,6 +165,8 @@ class PhylipIterator(AlignmentIterator):
     # Default truncation length
     id_width = _PHYLIP_ID_WIDTH
 
+    _header = None  # for caching lines between __next__ calls
+
     def _is_header(self, line):
         line = line.strip()
         parts = [x for x in line.split() if x]
@@ -190,13 +194,13 @@ class PhylipIterator(AlignmentIterator):
     def __next__(self):
         handle = self.handle
 
-        try:
+        if self._header is None:
+            line = handle.readline()
+        else:
             # Header we saved from when we were parsing
             # the previous alignment.
             line = self._header
-            del self._header
-        except AttributeError:
-            line = handle.readline()
+            self._header = None
 
         if not line:
             raise StopIteration
@@ -367,16 +371,19 @@ class SequentialPhylipIterator(PhylipIterator):
     the next. According to the PHYLIP documentation for input file formatting,
     newlines and spaces may optionally be entered at any point in the sequences.
     """
+
+    _header = None  # for caching lines between __next__ calls
+
     def __next__(self):
         handle = self.handle
 
-        try:
+        if self._header is None:
+            line = handle.readline()
+        else:
             # Header we saved from when we were parsing
             # the previous alignment.
             line = self._header
-            del self._header
-        except AttributeError:
-            line = handle.readline()
+            self._header = None
 
         if not line:
             raise StopIteration

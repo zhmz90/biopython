@@ -173,9 +173,12 @@ class AbstractCommandline(object):
     """
     # TODO - Replace the above example since EMBOSS doesn't work properly
     # if installed into a folder with a space like "C:\Program Files\EMBOSS"
-
+    #
     # Note the call example above is not a doctest as we can't handle EMBOSS
     # (or any other tool) being missing in the unit tests.
+
+    parameters = None  # will be a list defined in subclasses
+
     def __init__(self, cmd, **kwargs):
         """Create a new instance of a command line wrapper object."""
         # Init method - should be subclassed!
@@ -516,7 +519,7 @@ class AbstractCommandline(object):
         return stdout_str, stderr_str
 
 
-class _AbstractParameter:
+class _AbstractParameter(object):
     """A class to hold information about a parameter for a commandline.
 
     Do not use this directly, instead use one of the subclasses.

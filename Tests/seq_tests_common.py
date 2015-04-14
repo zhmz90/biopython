@@ -110,13 +110,13 @@ def compare_feature(old_f, new_f):
     assert isinstance(old_f.location, CompoundLocation) == \
            isinstance(new_f.location, CompoundLocation)
     if isinstance(old_f.location, CompoundLocation):
-         assert len(old_f.location.parts) == len(new_f.location.parts)
-         for old_l, new_l in zip(old_f.location.parts, new_f.location.parts):
-             assert old_l.start == new_l.start
-             assert old_l.end == new_l.end
-             assert old_l.strand == new_l.strand
-             assert old_l.ref == new_l.ref
-             assert old_l.ref_db == new_l.ref_db
+        assert len(old_f.location.parts) == len(new_f.location.parts)
+        for old_l, new_l in zip(old_f.location.parts, new_f.location.parts):
+            assert old_l.start == new_l.start
+            assert old_l.end == new_l.end
+            assert old_l.strand == new_l.strand
+            assert old_l.ref == new_l.ref
+            assert old_l.ref_db == new_l.ref_db
 
     assert len(old_f.location.parts) == len(new_f.location.parts)
     for old_sub, new_sub in zip(old_f.location.parts, new_f.location.parts):
@@ -217,7 +217,7 @@ def compare_sequence(old, new):
         indices = list(range(-ln, ln))
     else:
         # A selection of end cases, and the mid point
-        indices = [-ln, -ln+1, -(ln//2), -1, 0, 1, ln//2, ln-2, ln-1]
+        indices = [-ln, -ln + 1, -(ln // 2), -1, 0, 1, ln // 2, ln - 2, ln - 1]
 
     # Test element access,
     for i in indices:
@@ -287,7 +287,7 @@ def compare_record(old, new):
     # Annotation:
     # We are expecting to see some "extra" annotations appearing,
     # such as 'cross_references', 'dates', 'data_file_division',
-    #'ncbi_taxon' and 'gi'.
+    # 'ncbi_taxon' and 'gi'.
     # TODO - address these, see Bug 2681?
     new_keys = set(new.annotations).difference(old.annotations)
     new_keys = new_keys.difference(['cross_references', 'date',

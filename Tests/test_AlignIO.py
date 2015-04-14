@@ -67,7 +67,7 @@ test_files = [
     ("fasta-m10", 2, 9, 'Fasta/output007.m10'),
     ("fasta-m10", 2, 12, 'Fasta/output008.m10'),
     ("ig", 16, 1, 'IntelliGenetics/VIF_mase-pro.txt'),
-    ("pir", 2, 1,  'NBRF/clustalw.pir'),
+    ("pir", 2, 1, 'NBRF/clustalw.pir'),
     ]
 
 
@@ -75,7 +75,7 @@ def str_summary(text, max_len=40):
     if len(text) <= max_len:
         return text
     else:
-        return text[:max_len-4] + "..." + text[-3:]
+        return text[:max_len - 4] + "..." + text[-3:]
 
 
 def alignment_summary(alignment, index="  ", vertical_threshold=5):
@@ -103,7 +103,7 @@ def alignment_summary(alignment, index="  ", vertical_threshold=5):
 
 
 def check_simple_write_read(alignments, indent=" "):
-    #print(indent+"Checking we can write and then read back these alignments")
+    # print(indent+"Checking we can write and then read back these alignments")
     for format in test_write_read_align_with_seq_count:
         records_per_alignment = len(alignments[0])
         for a in alignments:
@@ -114,7 +114,7 @@ def check_simple_write_read(alignments, indent=" "):
         and format not in test_write_read_alignment_formats:
             continue
 
-        print(indent+"Checking can write/read as '%s' format" % format)
+        print(indent + "Checking can write/read as '%s' format" % format)
 
         # Going to write to a handle...
         handle = StringIO()
@@ -125,7 +125,7 @@ def check_simple_write_read(alignments, indent=" "):
         except ValueError as e:
             # This is often expected to happen, for example when we try and
             # write sequences of different lengths to an alignment file.
-            print(indent+"Failed: %s" % str(e))
+            print(indent + "Failed: %s" % str(e))
             # Carry on to the next format:
             continue
 
@@ -160,7 +160,7 @@ def check_simple_write_read(alignments, indent=" "):
                                   % (str(e), repr(handle.read()), repr(alignments2)))
             simple_alignment_comparison(alignments, alignments2, format)
 
-        if len(alignments)>1:
+        if len(alignments) > 1:
             # Try writing just one Alignment (not a list)
             handle = StringIO()
             SeqIO.write(alignments[0], handle, format)
@@ -184,16 +184,16 @@ def simple_alignment_comparison(alignments, alignments2, format):
             if format in ["phylip", "phylip-sequential"]:
                 assert r1.id.replace("[", "").replace("]", "")[:10] == r2.id, \
                        "'%s' vs '%s'" % (r1.id, r2.id)
-            elif format=="phylip-relaxed":
+            elif format == "phylip-relaxed":
                 assert r1.id.replace(" ", "").replace(':', '|') == r2.id, \
                         "'%s' vs '%s'" % (r1.id, r2.id)
-            elif format=="clustal":
+            elif format == "clustal":
                 assert r1.id.replace(" ", "_")[:30] == r2.id, \
                        "'%s' vs '%s'" % (r1.id, r2.id)
-            elif format=="stockholm":
+            elif format == "stockholm":
                 assert r1.id.replace(" ", "_") == r2.id, \
                        "'%s' vs '%s'" % (r1.id, r2.id)
-            elif format=="fasta":
+            elif format == "fasta":
                 assert r1.id.split()[0] == r2.id
             else:
                 assert r1.id == r2.id, \
@@ -210,7 +210,7 @@ def check_phylip_reject_duplicate():
     handle = StringIO()
     sequences = [SeqRecord(Seq('AAAA'), id='longsequencename1'),
                  SeqRecord(Seq('AAAA'), id='longsequencename2'),
-                 SeqRecord(Seq('AAAA'), id='other_sequence'),]
+                 SeqRecord(Seq('AAAA'), id='other_sequence'), ]
     alignment = MultipleSeqAlignment(sequences)
     try:
         # This should raise a ValueError
@@ -230,7 +230,7 @@ for t_format in AlignIO._FormatToIterator:
     assert len(alignments) == 0
 
 # Check writers can cope with no alignments
-for t_format in list(AlignIO._FormatToWriter)+list(SeqIO._FormatToWriter):
+for t_format in list(AlignIO._FormatToWriter) + list(SeqIO._FormatToWriter):
     handle = StringIO()
     assert 0 == AlignIO.write([], handle, t_format), \
            "Writing no alignments to %s format should work!" \
@@ -239,7 +239,7 @@ for t_format in list(AlignIO._FormatToWriter)+list(SeqIO._FormatToWriter):
 
 # Check writers reject non-alignments
 list_of_records = list(AlignIO.read("Clustalw/opuntia.aln", "clustal"))
-for t_format in list(AlignIO._FormatToWriter)+list(SeqIO._FormatToWriter):
+for t_format in list(AlignIO._FormatToWriter) + list(SeqIO._FormatToWriter):
     handle = StringIO()
     try:
         AlignIO.write([list_of_records], handle, t_format)
@@ -327,19 +327,19 @@ for (t_format, t_per, t_count, t_filename) in test_files:
 
     # Show the alignment
     for i, alignment in enumerate(alignments):
-        if i < 3 or i+1 == t_count:
+        if i < 3 or i + 1 == t_count:
             print(" Alignment %i, with %i sequences of length %i"
                   % (i,
                      len(alignment),
                      alignment.get_alignment_length()))
             print(alignment_summary(alignment))
-        elif i==3:
+        elif i == 3:
             print(" ...")
 
     # Check AlignInfo.SummaryInfo likes the alignment
     summary = AlignInfo.SummaryInfo(alignment)
     dumb_consensus = summary.dumb_consensus()
-    #gap_consensus = summary.gap_consensus()
+    # gap_consensus = summary.gap_consensus()
     if t_format != "nexus":
         # Hack for bug 2535
         pssm = summary.pos_specific_score_matrix()
@@ -351,8 +351,8 @@ for (t_format, t_per, t_count, t_filename) in test_files:
                 raise e
             pass
 
-    if t_count==1 and t_format not in ["nexus", "emboss", "fasta-m10"]:
-        #print(" Trying to read a triple concatenation of the input file")
+    if t_count == 1 and t_format not in ["nexus", "emboss", "fasta-m10"]:
+        # print(" Trying to read a triple concatenation of the input file")
         with open(t_filename, "r") as handle:
             data = handle.read()
         handle = StringIO()

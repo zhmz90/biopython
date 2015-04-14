@@ -63,8 +63,8 @@ Chilodonella_uncinata_table = CodonTable(forward_table={
     'GCT': 'A', 'GCC': 'A', 'GCA': 'A', 'GCG': 'A',
     'GAT': 'D', 'GAC': 'D', 'GAA': 'E', 'GAG': 'E',
     'GGT': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'},
-    start_codons = [ 'ATG'],
-    stop_codons = ['TAA' ])
+    start_codons=['ATG'],
+    stop_codons=['TAA'])
 
 
 class StringMethodTests(unittest.TestCase):
@@ -198,8 +198,8 @@ class StringMethodTests(unittest.TestCase):
             if not hasattr(example1, "startswith"):
                 # e.g. MutableSeq does not support this
                 continue
-            subs = tuple([example1[start:start+2] for start
-                          in range(0, len(example1)-2, 3)])
+            subs = tuple([example1[start:start + 2] for start
+                          in range(0, len(example1) - 2, 3)])
             subs_str = tuple([str(s) for s in subs])
 
             self.assertEqual(str(example1).startswith(subs_str),
@@ -221,8 +221,8 @@ class StringMethodTests(unittest.TestCase):
             if not hasattr(example1, "endswith"):
                 # e.g. MutableSeq does not support this
                 continue
-            subs = tuple([example1[start:start+2] for start
-                          in range(0, len(example1)-2, 3)])
+            subs = tuple([example1[start:start + 2] for start
+                          in range(0, len(example1) - 2, 3)])
             subs_str = tuple([str(s) for s in subs])
 
             self.assertEqual(str(example1).endswith(subs_str),
@@ -291,62 +291,34 @@ class StringMethodTests(unittest.TestCase):
                 continue
             with warnings.catch_warnings():
                 # Silence change in behaviour warning
-                warnings.simplefilter('ignore', FutureWarning)
-                self.assertEqual(hash(id(example1)), hash(example1),
+                warnings.simplefilter('ignore', BiopythonWarning)
+                self.assertEqual(hash(str(example1)), hash(example1),
                                  "Hash mismatch, %r for %r vs %r for %r"
-                                 % (hash(id(example1)), id(example1),
+                                 % (hash(str(example1)), id(example1),
                                     hash(example1), example1))
 
     def test_str_comparison(self):
-        if sys.version_info[0] >= 3:
-            # TODO - replace __cmp__ with specific methods for Python 3
-            return
         for example1 in self._examples:
             for example2 in self._examples:
-                # Currently Seq vs MutableSeq use different rules,
-                #
-                # >>> MutableSeq('ACGTGGGGT') == Seq('ACGTGGGGT')
-                # True
-                # >>> MutableSeq('ACGTGGGGT') == MutableSeq('ACGTGGGGT')
-                # True
-                # >>> Seq('ACGTGGGGT') == MutableSeq('ACGTGGGGT')
-                # False
-                # >>> Seq('ACGTGGGGT') == Seq('ACGTGGGGT')
-                # False
-                #
-                # i.e. This is a mess but we will make both use string equality
-                if isinstance(example1, MutableSeq):
-                    rule = str
-                    if not _check_type_compatible([example1.alphabet, example2.alphabet]):
-                        # Would raise TypeError...
-                        continue
-                else:
-                    rule = id
                 with warnings.catch_warnings():
-                    # Silence change in behaviour warning
-                    warnings.simplefilter('ignore', FutureWarning)
-                    # Equality
-                    self.assertEqual(rule(example1) == rule(example2),
+                    # Silence alphabet warning
+                    warnings.simplefilter('ignore', BiopythonWarning)
+                    self.assertEqual(str(example1) == str(example2),
                                      example1 == example2,
                                      "Checking %r == %r" % (example1, example2))
-                    # Not equal
-                    self.assertEqual(rule(example1) != rule(example2),
+                    self.assertEqual(str(example1) != str(example2),
                                      example1 != example2,
                                      "Checking %r != %r" % (example1, example2))
-                    # Less than
-                    self.assertEqual(rule(example1) < rule(example2),
+                    self.assertEqual(str(example1) < str(example2),
                                      example1 < example2,
                                      "Checking %r < %r" % (example1, example2))
-                    # Less than or equal
-                    self.assertEqual(rule(example1) <= rule(example2),
+                    self.assertEqual(str(example1) <= str(example2),
                                      example1 <= example2,
                                      "Checking %r <= %r" % (example1, example2))
-                    # Greater than
-                    self.assertEqual(rule(example1) > rule(example2),
+                    self.assertEqual(str(example1) > str(example2),
                                      example1 > example2,
                                      "Checking %r > %r" % (example1, example2))
-                    # Greater than or equal
-                    self.assertEqual(rule(example1) >= rule(example2),
+                    self.assertEqual(str(example1) >= str(example2),
                                      example1 >= example2,
                                      "Checking %r >= %r" % (example1, example2))
 
@@ -408,11 +380,11 @@ class StringMethodTests(unittest.TestCase):
             str1 = str(example1)
             # This only does the unambiguous cases
             if "U" in str1 or "u" in str1 \
-            or example1.alphabet==generic_rna:
+            or example1.alphabet == generic_rna:
                 mapping = maketrans("ACGUacgu", "UGCAugca")
             elif "T" in str1 or "t" in str1 \
-            or example1.alphabet==generic_dna \
-            or example1.alphabet==generic_nucleotide:
+            or example1.alphabet == generic_dna \
+            or example1.alphabet == generic_nucleotide:
                 mapping = maketrans("ACGTacgt", "TGCAtgca")
             elif "A" not in str1 and "a" not in str1:
                 mapping = maketrans("CGcg", "GCgc")
@@ -436,11 +408,11 @@ class StringMethodTests(unittest.TestCase):
             str1 = str(example1)
             # This only does the unambiguous cases
             if "U" in str1 or "u" in str1 \
-            or example1.alphabet==generic_rna:
+            or example1.alphabet == generic_rna:
                 mapping = maketrans("ACGUacgu", "UGCAugca")
             elif "T" in str1 or "t" in str1 \
-            or example1.alphabet==generic_dna \
-            or example1.alphabet==generic_nucleotide:
+            or example1.alphabet == generic_dna \
+            or example1.alphabet == generic_nucleotide:
                 mapping = maketrans("ACGTacgt", "TGCAtgca")
             elif "A" not in str1 and "a" not in str1:
                 mapping = maketrans("CGcg", "GCgc")
@@ -573,22 +545,22 @@ class StringMethodTests(unittest.TestCase):
             for c1 in ambig:
                 for c2 in ambig:
                     for c3 in ambig:
-                        values = set([str(Seq(a+b+c).translate())
+                        values = set([str(Seq(a + b + c).translate())
                                       for a in ambig_values[c1]
                                       for b in ambig_values[c2]
                                       for c in ambig_values[c3]])
-                        t = str(Seq(c1+c2+c3).translate())
-                        if t=="*":
+                        t = str(Seq(c1 + c2 + c3).translate())
+                        if t == "*":
                             self.assertEqual(values, set("*"))
-                        elif t=="X":
+                        elif t == "X":
                             self.assertTrue(len(values) > 1,
                                 "translate('%s') = '%s' not '%s'"
-                                % (c1+c2+c3, t, ",".join(values)))
-                        elif t=="Z":
+                                % (c1 + c2 + c3, t, ",".join(values)))
+                        elif t == "Z":
                             self.assertEqual(values, set("EQ"))
-                        elif t=="B":
+                        elif t == "B":
                             self.assertEqual(values, set("DN"))
-                        elif t=="J":
+                        elif t == "J":
                             self.assertEqual(values, set("LI"))
                         else:
                             self.assertEqual(values, set(t))

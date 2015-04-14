@@ -19,9 +19,9 @@ from Bio.Application import _escape_filename
 from Bio.Alphabet import generic_protein, generic_dna, generic_nucleotide
 from Bio.Seq import Seq, translate
 from Bio.SeqRecord import SeqRecord
-#from Bio.Data.IUPACData import ambiguous_dna_letters
+# from Bio.Data.IUPACData import ambiguous_dna_letters
 
-#################################################################
+# ###############################################################
 
 # Try to avoid problems when the OS is in another language
 os.environ['LANG'] = 'C'
@@ -36,14 +36,14 @@ if "EMBOSS_ROOT" in os.environ:
     path = os.environ["EMBOSS_ROOT"]
     if os.path.isdir(path):
         for name in exes_wanted:
-            if os.path.isfile(os.path.join(path, name+".exe")):
-                exes[name] = os.path.join(path, name+".exe")
+            if os.path.isfile(os.path.join(path, name + ".exe")):
+                exes[name] = os.path.join(path, name + ".exe")
         del name
     else:
         raise MissingExternalDependencyError(
                   "$EMBOSS_ROOT=%r which does not exist!" % path)
     del path
-if sys.platform!="win32":
+if sys.platform != "win32":
     from Bio._py3k import getoutput
     for name in exes_wanted:
         # This will "just work" if installed on the path as normal on Unix
@@ -66,19 +66,19 @@ def get_emboss_version():
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT,
                              universal_newlines=True,
-                             shell=(sys.platform!="win32"))
+                             shell=(sys.platform != "win32"))
     stdout, stderr = child.communicate()
     child.stdout.close()  # This is both stdout and stderr
     del child
     assert stderr is None  # Send to stdout instead
     for line in stdout.split("\n"):
-        if line.strip()=="Report the current EMBOSS version number":
+        if line.strip() == "Report the current EMBOSS version number":
             # e.g.
             # $ embossversion
             # Report the current EMBOSS version number
             # 6.5.7.0
             pass
-        elif line.strip()=="Reports the current EMBOSS version number":
+        elif line.strip() == "Reports the current EMBOSS version number":
             # e.g.
             # $ embossversion
             # Reports the current EMBOSS version number
@@ -86,9 +86,9 @@ def get_emboss_version():
             pass
         elif line.startswith("Writes the current EMBOSS version number"):
             pass
-        elif line.count(".")==2:
+        elif line.count(".") == 2:
             return tuple(int(v) for v in line.strip().split("."))
-        elif line.count(".")==3:
+        elif line.count(".") == 3:
             # e.g. I installed mEMBOSS-6.2.0.1-setup.exe
             # which reports 6.2.0.1 - for this return (6,2,0)
             return tuple(int(v) for v in line.strip().split("."))[:3]
@@ -117,18 +117,18 @@ def emboss_convert(filename, old_format, new_format):
     # Setup, this assumes for all the format names used
     # Biopython and EMBOSS names are consistent!
     cline = SeqretCommandline(exes["seqret"],
-                              sequence = filename,
-                              sformat = old_format,
-                              osformat = new_format,
-                              auto = True,  # no prompting
-                              stdout = True)
+                              sequence=filename,
+                              sformat=old_format,
+                              osformat=new_format,
+                              auto=True,  # no prompting
+                              stdout=True)
     # Run the tool,
     child = subprocess.Popen(str(cline),
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              universal_newlines=True,
-                             shell=(sys.platform!="win32"))
+                             shell=(sys.platform != "win32"))
     child.stdin.close()
     child.stderr.close()
     return child.stdout
@@ -140,17 +140,17 @@ def emboss_piped_SeqIO_convert(records, old_format, new_format):
     # Setup, this assumes for all the format names used
     # Biopython and EMBOSS names are consistent!
     cline = SeqretCommandline(exes["seqret"],
-                              sformat = old_format,
-                              osformat = new_format,
-                              auto = True,  # no prompting
-                              filter = True)
+                              sformat=old_format,
+                              osformat=new_format,
+                              auto=True,  # no prompting
+                              filter=True)
     # Run the tool,
     child = subprocess.Popen(str(cline),
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              universal_newlines=True,
-                             shell=(sys.platform!="win32"))
+                             shell=(sys.platform != "win32"))
     SeqIO.write(records, child.stdin, old_format)
     child.stdin.close()
     child.stderr.close()
@@ -167,17 +167,17 @@ def emboss_piped_AlignIO_convert(alignments, old_format, new_format):
     # Setup, this assumes for all the format names used
     # Biopython and EMBOSS names are consistent!
     cline = SeqretCommandline(exes["seqret"],
-                              sformat = old_format,
-                              osformat = new_format,
-                              auto = True,  # no prompting
-                              filter = True)
+                              sformat=old_format,
+                              osformat=new_format,
+                              auto=True,  # no prompting
+                              filter=True)
     # Run the tool,
     child = subprocess.Popen(str(cline),
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              universal_newlines=True,
-                             shell=(sys.platform!="win32"))
+                             shell=(sys.platform != "win32"))
     try:
         AlignIO.write(alignments, child.stdin, old_format)
     except Exception as err:
@@ -214,7 +214,7 @@ def compare_records(old_list, new_list):
         if len(old.seq) != len(new.seq):
             raise ValueError("%i vs %i" % (len(old.seq), len(new.seq)))
         if str(old.seq).upper() != str(new.seq).upper():
-            if str(old.seq).replace("X", "N")==str(new.seq):
+            if str(old.seq).replace("X", "N") == str(new.seq):
                 raise ValueError("X -> N (protein forced into nucleotide?)")
             if len(old.seq) < 200:
                 raise ValueError("'%s' vs '%s'" % (old.seq, new.seq))
@@ -306,7 +306,7 @@ class SeqRetSeqIOTests(unittest.TestCase):
             else:
                 self.assertEqual(old.id, new.id)
             self.assertEqual(str(old.seq), str(new.seq))
-            if emboss_version < (6, 3, 0) and new.letter_annotations["phred_quality"] == [1]*len(old):
+            if emboss_version < (6, 3, 0) and new.letter_annotations["phred_quality"] == [1] * len(old):
                 # Apparent bug in EMBOSS 6.2.0.1 on Windows
                 pass
             else:
@@ -530,7 +530,7 @@ class PairwiseAlignmentTests(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         child.stdin.close()
         # Check we could read it's output
         align = AlignIO.read(child.stdout, "emboss")
@@ -590,7 +590,7 @@ class PairwiseAlignmentTests(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         child.stdin.close()
         # Check we could read it's output
         align = AlignIO.read(child.stdout, "emboss")
@@ -688,7 +688,7 @@ class PairwiseAlignmentTests(unittest.TestCase):
     def test_needle_piped2(self):
         """needle with asis trick, and nucleotide FASTA file, output piped to stdout."""
         # TODO - Support needle in Bio.Emboss.Applications
-        #(ideally with the -auto and -filter arguments)
+        # (ideally with the -auto and -filter arguments)
         # Setup,
         query = "ACACACTCACACACACTTGGTCAGAGATGCTGTGCTTCTTGGAA"
         cline = exes["needle"]
@@ -702,7 +702,7 @@ class PairwiseAlignmentTests(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         child.stdin.close()
         # Check we can parse the output and it is sensible...
         self.pairwise_alignment_check(query,
@@ -759,7 +759,7 @@ class PairwiseAlignmentTests(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         child.stdin.close()
         # Check we could read it's output
         for align in AlignIO.parse(child.stdout, "emboss"):
@@ -776,7 +776,7 @@ class PairwiseAlignmentTests(unittest.TestCase):
 def emboss_translate(sequence, table=None, frame=None):
     """Call transeq, returns protein sequence as string."""
     # TODO - Support transeq in Bio.Emboss.Applications?
-    #(doesn't seem worthwhile as Biopython can do translations)
+    # (doesn't seem worthwhile as Biopython can do translations)
 
     if not sequence:
         raise ValueError(sequence)
@@ -806,7 +806,7 @@ def emboss_translate(sequence, table=None, frame=None):
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              universal_newlines=True,
-                             shell=(sys.platform!="win32"))
+                             shell=(sys.platform != "win32"))
     out, err = child.communicate()
     # Check no error output:
     if err != "":
@@ -839,7 +839,7 @@ def check_translation(sequence, translation, table=None):
     or translation != translate(str(sequence), t):
         # More details...
         for i, amino in enumerate(translation):
-            codon = sequence[i*3:i*3+3]
+            codon = sequence[i * 3:i * 3 + 3]
             if amino != str(codon.translate(t)):
                 raise ValueError("%s -> %s not %s (table %s)"
                          % (codon, amino, codon.translate(t), t))
@@ -865,15 +865,15 @@ class TranslationTests(unittest.TestCase):
                     Seq("TANTARTAYTAMTAKTAHTABTADTAV", generic_dna),
                     # Problem cases,
                     #
-                    #Seq("TAW", generic_dna),
+                    # Seq("TAW", generic_dna),
                     # W = A or T, but EMBOSS does TAW -> X
                     # TAA -> Y, TAT ->Y, so in Biopython TAW -> Y
                     #
-                    #Seq("TAS", generic_dna),
+                    # Seq("TAS", generic_dna),
                     # S = C or G, but EMBOSS does TAS -> Y
                     # TAG -> *, TAC ->Y, so in Biopython TAS -> X (Y or *)
                     #
-                    #Seq("AAS", generic_dna),
+                    # Seq("AAS", generic_dna),
                     # On table 9, EMBOSS gives N, we give X.
                     # S = C or G, so according to my reading of
                     # table 9 on the NCBI page, AAC=N, AAG=K
@@ -885,7 +885,7 @@ class TranslationTests(unittest.TestCase):
         for sequence in examples:
             # EMBOSS treats spare residues differently... avoid this issue
             if len(sequence) % 3 != 0:
-                sequence = sequence[:-(len(sequence)%3)]
+                sequence = sequence[:-(len(sequence) % 3)]
             self.assertEqual(len(sequence) % 3, 0)
             self.assertTrue(len(sequence) > 0)
             self.check(sequence)
@@ -903,7 +903,7 @@ class TranslationTests(unittest.TestCase):
         return True
 
     def translate_all_codons(self, letters):
-        sequence = Seq("".join(c1+c3+c3
+        sequence = Seq("".join(c1 + c3 + c3
                                for c1 in letters
                                for c2 in letters
                                for c3 in letters),

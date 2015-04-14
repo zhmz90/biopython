@@ -23,7 +23,7 @@ from Bio import AlignIO
 os.environ['LANG'] = 'C'
 
 muscle_exe = None
-if sys.platform=="win32":
+if sys.platform == "win32":
     try:
         # This can vary depending on the Windows language.
         prog_files = os.environ["PROGRAMFILES"]
@@ -187,9 +187,9 @@ class SimpleAlignTest(unittest.TestCase):
         input_file = "Fasta/f002"
         self.assertTrue(os.path.isfile(input_file))
         records = list(SeqIO.parse(input_file, "fasta"))
-        records.sort(key = lambda rec: rec.id)
+        records.sort(key=lambda rec: rec.id)
         # Prepare the command... use Clustal output (with a MUSCLE header)
-        cmdline = MuscleCommandline(muscle_exe, input=input_file, clw = True)
+        cmdline = MuscleCommandline(muscle_exe, input=input_file, clw=True)
         self.assertEqual(str(cmdline).rstrip(), _escape_filename(muscle_exe) +
                          " -in Fasta/f002 -clw")
         self.assertEqual(str(eval(repr(cmdline))), str(cmdline))
@@ -197,7 +197,7 @@ class SimpleAlignTest(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         # Didn't use -quiet so there should be progress reports on stderr,
         align = AlignIO.read(child.stdout, "clustal")
         align.sort()  # by record.id
@@ -217,7 +217,7 @@ class SimpleAlignTest(unittest.TestCase):
         input_file = "Fasta/f002"
         self.assertTrue(os.path.isfile(input_file))
         records = list(SeqIO.parse(input_file, "fasta"))
-        records.sort(key = lambda rec: rec.id)
+        records.sort(key=lambda rec: rec.id)
         # Prepare the command...
         cmdline = MuscleCommandline(muscle_exe)
         cmdline.set_parameter("in", input_file)
@@ -230,7 +230,7 @@ class SimpleAlignTest(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         # Didn't use -quiet so there should be progress reports on stderr,
         align = AlignIO.read(child.stdout, "clustal")
         align.sort()
@@ -271,10 +271,10 @@ class SimpleAlignTest(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         align = AlignIO.read(child.stdout, "clustal")
         align.sort()
-        records.sort(key = lambda rec: rec.id)
+        records.sort(key=lambda rec: rec.id)
         self.assertEqual(len(records), len(align))
         for old, new in zip(records, align):
             self.assertEqual(old.id, new.id)
@@ -303,13 +303,13 @@ class SimpleAlignTest(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         SeqIO.write(records, child.stdin, "fasta")
         child.stdin.close()
         # Alignment will now run...
         align = AlignIO.read(child.stdout, "clustal")
         align.sort()
-        records.sort(key = lambda rec: rec.id)
+        records.sort(key=lambda rec: rec.id)
         self.assertEqual(len(records), len(align))
         for old, new in zip(records, align):
             self.assertEqual(old.id, new.id)
@@ -326,11 +326,11 @@ class SimpleAlignTest(unittest.TestCase):
         output_clwstrict = "temp_f002.clw"
         self.assertTrue(os.path.isfile(input_file))
         records = list(SeqIO.parse(input_file, "fasta"))
-        records.sort(key = lambda rec: rec.id)
+        records.sort(key=lambda rec: rec.id)
         # Prepare the command... use Clustal output (with a MUSCLE header)
         cmdline = MuscleCommandline(muscle_exe, input=input_file,
-                                    clw=True, htmlout = output_html,
-                                    clwstrictout = output_clwstrict)
+                                    clw=True, htmlout=output_html,
+                                    clwstrictout=output_clwstrict)
         self.assertEqual(str(cmdline).rstrip(), _escape_filename(muscle_exe) +
                          " -in Fasta/f002 -clw -htmlout temp_f002.html" +
                          " -clwstrictout temp_f002.clw")
@@ -339,7 +339,7 @@ class SimpleAlignTest(unittest.TestCase):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  universal_newlines=True,
-                                 shell=(sys.platform!="win32"))
+                                 shell=(sys.platform != "win32"))
         # Clustalw on stdout:
         align = AlignIO.read(child.stdout, "clustal")
         align.sort()
